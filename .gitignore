@@ -11,10 +11,6 @@ __pycache__/
 .venv/
 .uv/
 
-# Massive Media Files
-*.wav
-*.bin
-
 # IDE Files
 .zed/
 .cache/
