@@ -47,7 +47,7 @@ int main() {
 
     Shader shader("assets/shaders/shader.vert", "assets/shaders/shader.frag");
 
-    VideoReader videoReader("scripts/bad_apple.bin");
+    VideoReader videoReader("assets/generated/bad_apple_video.bin");
 
     float videoAspect =
         (float)videoReader.header.width / (float)videoReader.header.height;
@@ -129,7 +129,8 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
 
-    ma_sound_init_from_file(&audioEngine, "scripts/audio.wav",
+    ma_sound_init_from_file(&audioEngine,
+                            "assets/generated/bad_apple_audio.wav",
                             MA_SOUND_FLAG_DECODE, NULL, NULL, &videoSound);
     ma_sound_start(&videoSound);
 

@@ -1,6 +1,25 @@
-import cv2
 import struct
 from pathlib import Path
+
+import cv2
+from moviepy.video.io.VideoFileClip import VideoFileClip
+import sys
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+ASSETS_DIR = REPO_ROOT / "assets" / "generated"
+MEDIA_DIR = REPO_ROOT / "media"
+
+def print_progress_bar(iteration: int, total: int, bar_length: int = 40) -> None:
+    if total <= 0:
+        return
+
+    percent = min(100.0, max(0.0, (iteration / total) * 100.0))
+    filled_length = (bar_length * iteration) // total
+    bar = "█" * filled_length + "░" * (bar_length - filled_length)
+
+    sys.stdout.write(f"\rProgress: |{bar}| {percent:.1f}% ({iteration}/{total} frames)")
+    sys.stdout.flush()
 
 def compress_frame_rle(frame_bytes) -> bytearray:
     rle_data = bytearray()
@@ -27,6 +46,7 @@ def compress_frame_rle(frame_bytes) -> bytearray:
 
     return rle_data
 
+
 def mp4_to_rle(input_mp4, output_bin) -> None:
     cap = cv2.VideoCapture(input_mp4)
     if not cap.isOpened():
@@ -37,7 +57,7 @@ def mp4_to_rle(input_mp4, output_bin) -> None:
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    print(f"Processing {frame_count} frames of {width}x{height}")
+    print(f"Processing {frame_count} frames of dimensions {width}x{height}")
 
     with open(output_bin, "wb") as f:
         f.write(struct.pack("<HHH", width, height, frame_count))
@@ -60,11 +80,26 @@ def mp4_to_rle(input_mp4, output_bin) -> None:
             f.write(rle_frame_data)
 
             processed_frames += 1
-            if processed_frames % 500 == 0:
-                print(f"Compressed {processed_frames}/{frame_count} images")
+            print_progress_bar(processed_frames, frame_count)
 
     cap.release()
-    print(f"Successfully generated {output_bin}")
+    print(f"\nSuccessfully generated {output_bin}")
+
+
+def extract_audio_to_wav(mp4_path, wav_path) -> None:
+    video = VideoFileClip(mp4_path)
+
+    video.audio.write_audiofile(wav_path, codec="pcm_s16le")
+
+    video.close()
+
 
 if __name__ == "__main__":
-    mp4_to_rle("bad_apple.mp4", "bad_apple.bin")
+    print("Compressing video...")
+    mp4_to_rle(MEDIA_DIR / "bad_apple.mp4", ASSETS_DIR / "bad_apple_video.bin")
+    print("Compression done")
+    print("Extracting audio...")
+    extract_audio_to_wav(
+        MEDIA_DIR / "bad_apple.mp4", ASSETS_DIR / "bad_apple_audio.wav"
+    )
+    print("All done!")
