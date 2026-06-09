@@ -1,0 +1,21 @@
+# C++ Build Artifacts
+/build/
+/bin/
+__cmake_systeminformation/
+*.exe
+*.o
+*.obj
+
+# Python/uv Artifacts
+__pycache__/
+.venv/
+.uv/
+
+# Massive Media Files
+*.mp4
+*.wav
+*.bin
+
+# IDE Files
+.zed/
+.cache/
