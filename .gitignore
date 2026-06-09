@@ -12,7 +12,6 @@ __pycache__/
 .uv/
 
 # Massive Media Files
-*.mp4
 *.wav
 *.bin
 
