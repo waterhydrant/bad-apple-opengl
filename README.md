@@ -32,6 +32,23 @@ The compiled files will be in the `build` directory:'
 .\build\bin\Release\my_executable.exe
 ```
 
+## Replacing the Video
+
+To use a different video, replace `media/bad_apple.mp4` with your own `.mp4` file. Then run the video encoding script to regenerate the files used by the program:
+
+```bash
+uv run scripts/encode_video.py
+```
+
+The script decodes the video into two generated assets:
+
+* a compressed binary video file
+* a `.wav` audio file
+
+Both files are written to the assets/generated folder. The OpenGL program reads from this generated folder at runtime, so the video must be re-encoded whenever media/bad_apple.mp4 is replaced.
+
+The encoded video uses Run-Length Encoding (RLE). Each byte stores one run of pixels: the most significant bit represents the color, where 1 is white and 0 is black, while the remaining 7 bits store the run length, up to a maximum of 127 pixels.
+
 ## Code Overview
 
 This codebase uses only a few dependencies:
@@ -46,8 +63,4 @@ CMake is used for building and managing dependencies.
 
 C++ files are organized into the typical structure: source files go in the `src` folder, and header files go in the `include` folder. Dependencies are located in the `vendor` folder. OpenGL shaders are in the `assets/shaders` folder.
 
-The video file is provided in `media/bad_apple.mp4`, and it can be directly replaced. `scripts/encode_video.py` is responsible for decoding that video file into a compressed binary file and an audio wav file in the `assets/generated` folder. 
-
 The `scripts` folder uses the [uv package manager](https://github.com/astral-sh/uv).
-
-The video file is compressed using Run-Length Encoding (RLE). For every byte, the most significant bit (MSB) indicates the color, where 1 indicates white and 0 indicates black. The remaining 7 bits indicate the run-length of that color up to 127. 
