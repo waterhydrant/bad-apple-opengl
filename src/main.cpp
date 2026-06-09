@@ -118,8 +118,19 @@ int main() {
         return -1;
     }
 
-    ma_sound_init_from_file(&audioEngine, "scripts/audio.wav", MA_SOUND_FLAG_DECODE,
-                            NULL, NULL, &videoSound);
+    // Preload first frame to prevent showing white while audio engine boots up
+    std::span<std::uint8_t> firstFrame = videoReader.getFrameData(0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, videoReader.header.width,
+                    videoReader.header.height, GL_RED, GL_UNSIGNED_BYTE,
+                    firstFrame.data());
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glfwSwapBuffers(window);
+
+    ma_sound_init_from_file(&audioEngine, "scripts/audio.wav",
+                            MA_SOUND_FLAG_DECODE, NULL, NULL, &videoSound);
     ma_sound_start(&videoSound);
 
     while (!glfwWindowShouldClose(window)) {
@@ -164,7 +175,7 @@ int main() {
 
     ma_sound_uninit(&videoSound);
     ma_engine_uninit(&audioEngine);
-    
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
