@@ -81,8 +81,6 @@ int run(GLFWwindow *window) {
     shader.use();
 
     const double fps = 30;
-    const double frameTime = 1 / fps;
-    double startTime = glfwGetTime();
 
     unsigned int uScaleLoc = glGetUniformLocation(shader.id, "uScale");
 
@@ -155,6 +153,7 @@ int run(GLFWwindow *window) {
     ma_sound_uninit(&videoSound);
     ma_engine_uninit(&audioEngine);
 
+    glDeleteTextures(1, &texture);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
