@@ -46,6 +46,7 @@ int main() {
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD\n";
+        glfwTerminate();
         return -1;
     }
 
@@ -117,6 +118,7 @@ int main() {
     ma_result result = ma_engine_init(NULL, &audioEngine);
     if (result != MA_SUCCESS) {
         std::cerr << "Failed to initialize audio engine\n";
+        glfwTerminate();
         return -1;
     }
 
@@ -176,7 +178,8 @@ int main() {
         glfwSwapBuffers(window);
     }
 
-    ma_sound_stop(&videoSound);
+    ma_sound_uninit(&videoSound);
+    ma_engine_uninit(&audioEngine);
 
     glfwTerminate();
     return 0;
